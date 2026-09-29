@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2026 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// AIDL Sensors HAL for the BananaPi F3 header I2C4 modules (MPU-9250, AHT20, BMP280),
+// based on the AOSP example HAL.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+cc_defaults {
+    name: "sensors-spacemit-defaults",
+    vendor: true,
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "libcutils",
+        "libfmq",
+        "liblog",
+        "libpower",
+        "libutils",
+        "android.hardware.common-V2-ndk",
+        "android.hardware.common.fmq-V1-ndk",
+        "android.hardware.sensors-V3-ndk",
+    ],
+    cflags: [
+        "-Wall",
+        "-Werror",
+    ],
+}
+
+cc_library_static {
+    name: "libsensorsspacemitimpl",
+    defaults: ["sensors-spacemit-defaults"],
+    export_include_dirs: ["include"],
+    srcs: [
+        "AxisMap.cpp",
+        "BoardSensors.cpp",
+        "I2cDevice.cpp",
+        "ImuSensor.cpp",
+        "Mpu9250.cpp",
+        "Sensor.cpp",
+        "Sensors.cpp",
+        "SysfsSensor.cpp",
+        "Utils.cpp",
+    ],
+}
+
+cc_binary {
+    name: "android.hardware.sensors-service.spacemit",
+    defaults: ["sensors-spacemit-defaults"],
+    relative_install_path: "hw",
+    init_rc: ["sensors-spacemit.rc"],
+    vintf_fragments: ["sensors-spacemit.xml"],
+    static_libs: ["libsensorsspacemitimpl"],
+    srcs: ["main.cpp"],
+}
